@@ -1,4 +1,4 @@
-import { storageFiles, db } from "../../../config/firebase";
+import { storageFiles } from "../../../config/firebase";
 
 export default async function UploadImageService(avatarImage, userId) {
   const { storage, ref, uploadBytes, getDownloadURL } = storageFiles;
