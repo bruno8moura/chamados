@@ -6,6 +6,8 @@ import {
   getDoc,
   doc,
   updateDoc,
+  collection,
+  addDoc,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -48,6 +50,8 @@ const db = {
   doc,
   getDoc,
   updateDoc,
+  collection,
+  addDoc,
 };
 
 const storageFiles = {
