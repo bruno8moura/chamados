@@ -7,6 +7,8 @@ import Header from "../../components/Header";
 import Title from "../../components/Title";
 import { AuthContext } from "../../contexts/auth";
 import QueryClientsService from "../../services/database/QueryClientsService";
+import CreateOrderService from "../../services/database/CreateOrderService";
+import { toast } from "react-toastify";
 
 function New() {
   const { user } = React.useContext(AuthContext);
@@ -22,7 +24,7 @@ function New() {
   React.useEffect(() => {
     async function loadCustomers() {
       const result = await QueryClientsService();
-      setCustomers([{ id: 0, name: "Selecione..." }, ...result]);
+      setCustomers([{ id: "0", name: "Selecione..." }, ...result]);
     }
 
     loadCustomers();
@@ -36,6 +38,31 @@ function New() {
     setSubject(target.value);
   }
 
+  async function handleSubmit(e) {
+    e.preventDefault();
+    await CreateOrderService({
+      clientId: customers[customerSelected].id,
+      subject,
+      status,
+      complement,
+      uid: user.uid,
+    });
+
+    toast.success("Chamado registrado com sucesso!");
+    clearFields();
+  }
+
+  function handleClientsChange({ target }) {
+    setCustomerSelected(target.value);
+  }
+
+  function clearFields() {
+    setCustomerSelected(0);
+    setSubject("");
+    setStatus("");
+    setComplement("");
+  }
+
   return (
     <main>
       <Header />
@@ -44,18 +71,18 @@ function New() {
           <FiPlusCircle size={25} />
         </Title>
         <article className="container">
-          <form className="form-profile">
+          <form className="form-profile" onSubmit={handleSubmit}>
             <label htmlFor="clients">Clientes</label>
             {
               <select
                 name="clients"
                 id="clients"
                 value={customerSelected}
-                onChange={({ target }) => setCustomerSelected(target.value)}
+                onChange={handleClientsChange}
                 disabled={customers[0].loading}
               >
-                {customers.map((c) => (
-                  <option key={c.id} value={c.name}>
+                {customers.map((c, index) => (
+                  <option key={c.id} value={index}>
                     {c.name}
                   </option>
                 ))}
@@ -66,7 +93,8 @@ function New() {
             <select
               name="subject"
               id="subject"
-              defaultValue={subject ? subject : ""}
+              // defaultValue={subject ? subject : ""}
+              value={subject}
               onChange={handleSubjectOptionChange}
             >
               <option key={0} value="">
